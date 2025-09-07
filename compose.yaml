@@ -1,0 +1,7 @@
+﻿services:
+  pessoa:
+    image: pessoa
+    build:
+      context: .
+      dockerfile: Dockerfile
+
