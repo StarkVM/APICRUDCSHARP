@@ -11,10 +11,6 @@ builder.Services.AddScoped<PessoaContext>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-//var port = Environment.GetEnvironmentVariable("PORT") ?? "8078";
-//app.Urls.Add($"http//*:{port}");
-
 app.UseSwagger();
 app.UseSwaggerUI();
 
