@@ -24,5 +24,5 @@ app.PessoaRoutes();
 var port = Environment.GetEnvironmentVariable("PORT") ?? "10000";
 
 //app.UseHttpsRedirection();
-app.Run($"http://localhost:{port}");
+app.Run($"http://0.0.0.0:{port}");
 
