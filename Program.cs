@@ -21,6 +21,8 @@ app.UseSwaggerUI();
 
 app.PessoaRoutes();
 
+var port = Environment.GetEnvironmentVariable("PORT") ?? "3000";
+
 app.UseHttpsRedirection();
-app.Run();
+app.Run($"http://localhost:{port}");
 
