@@ -1,6 +1,7 @@
 using Pessoa.Models;
 using Pessoa.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc; // Necessário para [FromServices] e [FromBody]
 
 namespace Pessoa.Routes;
 
@@ -10,58 +11,52 @@ public static class PessoaRoute
     {
         var route = app.MapGroup("pessoa");
 
-        route.MapPost("", 
-            async (PessoaRequest req, PessoaContext context) =>
+        // POST - Contexto vem dos services, body vem do body
+        route.MapPost("",
+            async ([FromBody] PessoaRequest req,
+                   [FromServices] PessoaContext context) =>
             {
                 var pessoa = new PessoaModel(req.nome);
                 await context.AddAsync(pessoa);
                 await context.SaveChangesAsync();
+                return Results.Ok(pessoa);
             });
 
-        route.MapGet("", 
-            async (PessoaContext contex) =>
+        // GET - Apenas o contexto
+        route.MapGet("",
+            async ([FromServices] PessoaContext context) =>
             {
-                var pessoas = await contex.Pessoas.ToListAsync();
+                var pessoas = await context.Pessoas.ToListAsync();
                 return Results.Ok(pessoas);
-
             });
 
-        route.MapPut("{id:guid}", 
-            async (Guid id, PessoaRequest req, PessoaContext context) =>
+        // PUT - Guid + Body + Context
+        route.MapPut("{id:guid}",
+            async (Guid id,
+                   [FromBody] PessoaRequest req,
+                   [FromServices] PessoaContext context) =>
             {
                 var pessoa = await context.Pessoas.FirstOrDefaultAsync(x => x.Id == id);
-
                 if (pessoa == null)
-                {
                     return Results.NotFound();
-                }
-                
+
                 pessoa.MudarNome(req.nome);
-                
                 await context.SaveChangesAsync();
-
                 return Results.Ok(pessoa);
-            }
-        );
+            });
 
-        route.MapDelete("{id:guid}", 
-            async(Guid id, PessoaContext context) =>
-        {
-            var pessoa = await context.Pessoas.FirstOrDefaultAsync(x => x.Id == id);
-            
-            if (pessoa == null)
+        // DELETE - Guid + Context
+        route.MapDelete("{id:guid}",
+            async (Guid id,
+                   [FromServices] PessoaContext context) =>
             {
-                return Results.NotFound();
-            }
-            
-            pessoa.SetInativoNome();
-                
-            await context.SaveChangesAsync();
-            
-            return Results.Ok(pessoa);   
-        });
+                var pessoa = await context.Pessoas.FirstOrDefaultAsync(x => x.Id == id);
+                if (pessoa == null)
+                    return Results.NotFound();
 
+                pessoa.SetInativoNome();
+                await context.SaveChangesAsync();
+                return Results.Ok(pessoa);
+            });
     }
-
-
 }
