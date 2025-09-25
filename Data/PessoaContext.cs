@@ -10,7 +10,9 @@ public class PessoaContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseSqlite("Data Source=Pessoa.sqLite");
+        
+        var path = Path.Combine(AppContext.BaseDirectory, "Pessoa.sqLite");
+        optionsBuilder.UseSqlite($"Data Source={path}");
         base.OnConfiguring(optionsBuilder);
     }
 
